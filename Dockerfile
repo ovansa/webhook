@@ -24,11 +24,12 @@ RUN npm install --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/public ./public
 
-# SQLite database location. Mount a volume at /app/data to persist across
-# container restarts/redeploys.
+# SQLite database location. Attach a persistent volume at /app/data to persist
+# across restarts/redeploys. On Railway, add a Volume with mount path /app/data
+# (the VOLUME instruction is intentionally omitted — Railway rejects it and
+# manages persistence through its own Volumes feature).
 ENV DB_FILE=/app/data/webhook.db
 RUN mkdir -p /app/data
-VOLUME ["/app/data"]
 
 EXPOSE 3000
 ENV PORT=3000
