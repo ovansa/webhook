@@ -1,0 +1,25 @@
+{
+  "name": "webhook-inspector",
+  "version": "1.0.0",
+  "description": "A reliable self-hosted webhook request inspector, like webhook.site",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --disable-warning=ExperimentalWarning dist/server.js",
+    "dev": "tsx watch --disable-warning=ExperimentalWarning src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

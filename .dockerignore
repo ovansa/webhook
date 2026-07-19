@@ -1,0 +1,9 @@
+**/node_modules
+dist
+public
+data
+web/dist
+npm-debug.log
+.git
+.gitignore
+*.md

@@ -1,0 +1,16 @@
+services:
+  webhook-inspector:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Protect the UI/API. The capture endpoint stays open so real webhooks work.
+      - AUTH_TOKEN=${AUTH_TOKEN:-change-me}
+      - MAX_REQUESTS=${MAX_REQUESTS:-200}
+    volumes:
+      # Persist the SQLite database across restarts/redeploys.
+      - webhook-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  webhook-data:
