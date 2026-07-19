@@ -92,7 +92,10 @@ curl "http://localhost:3000/b/ID/hook?status=201&delay=2000"  # slow 201
 Each **bin** is a separate endpoint with its own captured requests.
 
 - Send webhooks to `POST /b/<binId>/<any/path>` — captured under that bin.
-- Requests to any other path fall into the `default` bin (backward compatible).
+- Any path **not** under `/b/<binId>` returns `404` and is **not** captured. On a
+  public deploy this keeps bot/scanner traffic (`/.env`, `/wp-login.php`, …) out
+  of your bins. Set `CAPTURE_ROOT=true` to restore the old behaviour where any
+  path is captured into the `default` bin (fine for a private/local instance).
 - Create/manage bins in the UI ("+ New URL") or via the API below.
 
 ```bash
@@ -150,3 +153,4 @@ without persistence (data lost on restart).
 | `MAX_REQUESTS` | `200`              | How many requests to keep per bin              |
 | `AUTH_TOKEN`   | *(none)*           | Protects UI/API. Unset = public. **Set this in production.** |
 | `DB_FILE`      | `data/webhook.db`  | SQLite database path. `:memory:` disables persistence. |
+| `CAPTURE_ROOT` | `false`            | Capture non-`/b/<binId>` paths into the `default` bin. Leave off on public deploys. |

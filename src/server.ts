@@ -156,10 +156,23 @@ app.all('/b/:binId', captureRawBody, (req: RawBodyRequest, res: Response) => {
   capture(req.params.binId, '/', req, res);
 });
 
-// --- Capture: legacy global catch-all -> default bin ---------------------
+// --- Catch-all for everything that isn't a bin-scoped capture ------------
+// On a public deploy the bare root is hammered by bot/scanner traffic
+// (/robots.txt, /.env, /wp-login.php, …). Capturing all of that would flood
+// the default bin and signal "something's here" to scanners, so by default we
+// return a plain 404 and record nothing. Only /b/:binId/… is captured.
+//
+// Set CAPTURE_ROOT=true to restore the legacy behaviour where any path is
+// captured into the default bin (handy for a private/local instance).
+const CAPTURE_ROOT = process.env.CAPTURE_ROOT === 'true';
+
 app.all('/*', captureRawBody, (req: RawBodyRequest, res: Response) => {
-  // Browsers auto-request /favicon.ico when the UI loads; don't record that
-  // noise in the default bin. (Bin-scoped webhooks always hit /b/:id/… above.)
+  if (!CAPTURE_ROOT) {
+    res.status(404).json({ error: 'Not found. Send webhooks to /b/<binId>/…' });
+    return;
+  }
+  // Legacy mode: capture into the default bin, but never record the browser's
+  // automatic /favicon.ico request.
   if (req.path === '/favicon.ico') {
     res.status(204).end();
     return;
