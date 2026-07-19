@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 /** Primary (indigo) and secondary (dark slate) buttons, matching the invoice app. */
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'dark' | 'ghost';
+  variant?: 'primary' | 'dark' | 'ghost' | 'danger';
 };
 
 const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
@@ -11,6 +11,8 @@ const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
   dark: 'bg-slate-800 text-white hover:bg-slate-700 disabled:opacity-40',
   ghost:
     'border border-slate-200 bg-white text-slate-600 hover:border-indigo-400 hover:text-indigo-600',
+  danger:
+    'bg-rose-600 text-white hover:bg-rose-500 disabled:opacity-60',
 };
 
 export function Button({

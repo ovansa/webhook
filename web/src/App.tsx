@@ -6,6 +6,7 @@ import RequestDetail from './components/RequestDetail';
 import ResponseEditor from './components/ResponseEditor';
 import NewUrlModal from './components/NewUrlModal';
 import BinSelect from './components/BinSelect';
+import ConfirmModal from './components/ConfirmModal';
 
 const BIN_KEY = 'webhook-inspector:binId';
 const POLL_MS = 2000;
@@ -21,6 +22,7 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [editingResponse, setEditingResponse] = useState(false);
   const [showNewUrl, setShowNewUrl] = useState(false);
+  const [showClear, setShowClear] = useState(false);
 
   const currentBinObj = bins.find((b) => b.id === currentBin);
 
@@ -94,8 +96,7 @@ export default function App() {
     refreshBins();
   }
 
-  async function handleClear() {
-    if (!window.confirm('Clear all captured requests in this bin?')) return;
+  async function handleClearConfirmed() {
     await api.clearBin(currentBin);
     setActiveId(null);
     refreshRequests();
@@ -154,7 +155,11 @@ export default function App() {
             Configure response
             {currentBinObj && <StatusBadge code={currentBinObj.responseConfig.statusCode} />}
           </Button>
-          <Button variant="ghost" onClick={handleClear}>
+          <Button
+            variant="ghost"
+            onClick={() => setShowClear(true)}
+            disabled={!requests.length}
+          >
             Clear
           </Button>
         </div>
@@ -179,6 +184,27 @@ export default function App() {
         <NewUrlModal
           onCreated={handleBinCreated}
           onClose={() => setShowNewUrl(false)}
+        />
+      )}
+
+      {showClear && (
+        <ConfirmModal
+          title="Clear captured requests"
+          message={
+            <>
+              This permanently deletes all{' '}
+              <span className="font-semibold text-slate-700">{requests.length}</span>{' '}
+              captured request{requests.length === 1 ? '' : 's'} in{' '}
+              <span className="font-mono text-slate-700">
+                {currentBinObj?.name ?? currentBin}
+              </span>
+              . This can't be undone.
+            </>
+          }
+          confirmLabel="Clear requests"
+          danger
+          onConfirm={handleClearConfirmed}
+          onClose={() => setShowClear(false)}
         />
       )}
 
